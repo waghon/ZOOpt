@@ -49,6 +49,7 @@ class SRacos(RacosCommon):
             bad_ele = self.replace(self._positive_data, ins, 'pos')
             self.replace(self._negative_data, bad_ele, 'neg', strategy)
             self._best_solution = self._positive_data[0]
+            i += self.check_positive_data()
             if i == 4:
                 time_log2 = time.time()
                 expected_time = (self._parameter.get_budget() - self._parameter.get_train_size()) * \
@@ -59,6 +60,20 @@ class SRacos(RacosCommon):
                     ToolFunction.log('expected remaining running time: %02d:%02d:%02d' % (h, m, s))
             i += 1
         return self._best_solution
+
+    def check_positive_data(self):
+        if self._is_positive_data_updated == True:
+            self._pos_data_not_updated_turns = 0
+            self._parameter.set_probability(self._parameter.get_max_probability())
+        else:
+            self._pos_data_not_updated_turns += 1
+        if self._pos_data_not_updated_turns == self._parameter.get_max_no_update_turns():
+            self._pos_data_not_updated_turns = 0
+            self._parameter.set_probability(self._parameter.get_min_probability())
+            for x in self._positive_data:
+                self._objective.accurate_eval(x)
+                return 100
+        return 0
 
     def replace(self, iset, x, iset_type, strategy='WR'):
         if strategy == 'WR':

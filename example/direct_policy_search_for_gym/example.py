@@ -1,5 +1,9 @@
 
 from gym_task import GymTask
+import numpy as np
+from matplotlib import pyplot
+import sys
+sys.path.append("../..")
 from zoopt import Dimension, Objective, Parameter, Opt, Solution
 
 """
@@ -33,18 +37,35 @@ def run_test(task_name, layers, in_budget, max_step, repeat):
     dim_tys = [True] * dim_size
     dim = Dimension(dim_size, dim_regs, dim_tys)
 
-    objective = Objective(gym_task.sum_reward, dim)  # form up the objective function
-    parameter = Parameter(budget=budget, autoset=True)  # by default, the algorithm is sequential RACOS
-    parameter.set_probability(rand_probability)
-
     result = []
     sum = 0
     print('solved solution is:')
     for i in range(repeat):
+        objective = Objective(gym_task.sum_reward, dim)  # form up the objective function
+        parameter = Parameter(budget=budget, autoset=True)  # by default, the algorithm is sequential RACOS
+        parameter.set_probability(rand_probability)
         ins = Opt.min(objective, parameter)
         result.append(ins.get_value())
+
+        best_stable_ins = objective.get_best_stable_ins()
+        if best_stable_ins != None:
+            best_stable_ins_val = best_stable_ins.get_value()
+        else:
+            best_stable_ins_val = float("inf")
+        for i in range(1):
+            ins_rewards = []
+            for i in range(100):
+                ins_rewards.append(gym_task.sum_reward(ins))
+            # print(np.mean(ins_rewards),best_stable_ins_val)
+            if np.mean(ins_rewards) < best_stable_ins_val:
+                print("last mean", np.mean(ins_rewards))
+                print("last std", np.std(ins_rewards))
+            else:
+                print("stable mean", best_stable_ins.get_value())
+                print("stable std", best_stable_ins.get_std())
+
         sum += ins.get_value()
-        ins.print_solution()
+        #ins.print_solution()
     print(result)  # results in repeat times
     print(sum/len(result))  # average result
 
@@ -57,8 +78,8 @@ if __name__ == '__main__':
         ant_layers = [111, 15, 8]
         hopper_layers = [11, 9, 5, 3]
         lunarlander_layers = [8, 5, 3, 1]
-        run_test('MountainCar-v0', mountain_car_layers, 2000, 10000, 1)
-        run_test('Acrobot-v1', acrobot_layers, 2000, 2000, 1)
+        run_test('MountainCar-v0', mountain_car_layers, 20000, 10000, 15)
+        #run_test('Acrobot-v1', acrobot_layers, 2000, 2000, 1)
         # If you want to run the following examples, you may need to install more libs(mujoco, Box2D).
         # run_test('HalfCheetah-v1', halfcheetah_layers, 2000, 10000, 10)
         # run_test('Humanoid-v1', humanoid_layers, 2000, 50000, 10)

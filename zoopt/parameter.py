@@ -32,6 +32,9 @@ class Parameter:
         self.__positive_size = 0
         self.__negative_size = 0
         self.__probability = 0.99
+        self.__max_no_update_turns = 500
+        self.__max_probability = 0.95
+        self.__min_probability = 0.8
 
         # for pareto optimization
         self.__isolationFunc = lambda x: 0
@@ -130,6 +133,24 @@ class Parameter:
 
     def get_isolationFunc(self):
         return self.__isolationFunc
+
+    def set_max_no_update_turns(self, turns):
+        self.__max_no_update_turns = turns
+
+    def get_max_no_update_turns(self):
+        return self.__max_no_update_turns
+
+    def set_max_probability(self, probability):
+        self.__max_probability = probability
+
+    def get_max_probability(self):
+        return self.__max_probability
+
+    def set_min_probability(self, probability):
+        self.__min_probability = probability
+
+    def get_min_probability(self):
+        return self.__min_probability
 
 
 

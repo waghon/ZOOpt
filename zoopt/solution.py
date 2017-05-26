@@ -19,6 +19,7 @@ class Solution:
     def __init__(self, x=[], value=nan, attach=None):
         self.__x = x
         self.__value = value
+        self.__std = None
         self.__attach = attach
         return
 
@@ -58,6 +59,12 @@ class Solution:
     def set_x(self, x):
         self.__x = x
         return
+
+    def set_std(self, std):
+        self.__std = std
+
+    def get_std(self):
+        return self.__std
 
     def set_value(self, value):
         self.__value = value

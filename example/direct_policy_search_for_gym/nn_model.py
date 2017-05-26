@@ -49,7 +49,7 @@ class Layer(object):
         interval = self.__column
         begin = 0
         output = []
-        step = len(w) / interval
+        step = math.floor(len(w) / interval)
         for i in range(step):
             output.append(w[begin: begin + interval])
             begin += interval

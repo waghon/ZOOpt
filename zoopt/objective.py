@@ -1,5 +1,6 @@
 
 from zoopt.solution import Solution
+import numpy as np
 from zoopt.utils.zoo_global import pos_inf
 
 """
@@ -22,6 +23,8 @@ class Objective:
         self.__constraint = constraint
         # the history of optimization
         self.__history = []
+        # the stable instances during the policy search
+        self.__stable_ins = []
 
     # Construct a solution from x
     def construct_solution(self, x, parent=None):
@@ -35,6 +38,15 @@ class Objective:
     def eval(self, solution):
         solution.set_value(self.__func(solution))
         self.__history.append(solution.get_value())
+
+    def accurate_eval(self, solution):
+        turns = 100
+        solution_values = []
+        for i in range(turns):
+            solution_values.append(self.__func(solution))
+        solution.set_value(np.mean(solution_values))
+        solution.set_std(np.std(solution_values))
+        self.__stable_ins.append(solution)
 
     def eval_constraint(self, solution):
         solution.set_value( [self.__func(solution), self.__constraint(solution)])
@@ -76,6 +88,16 @@ class Objective:
     # get the optimization history
     def get_history(self):
         return self.__history
+
+    # get best stable ins
+    def get_best_stable_ins(self):
+        if len(self.__stable_ins) == 0:
+            return None
+        best_ins = self.__stable_ins[0]
+        for ins in self.__stable_ins:
+            if ins.get_value() < best_ins.get_value():
+                best_ins = ins
+        return best_ins
 
     # get the best-so-far history
     def get_history_bestsofar(self):

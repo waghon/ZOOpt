@@ -26,6 +26,10 @@ class RacosCommon:
         self._negative_data = []
         # Solution
         self._best_solution = None
+        # record if positive solutions set changed
+        self._is_positive_data_updated = False
+        # record how many turn positive data not changed
+        self._pos_data_not_updated_turns = 0
         return
 
     # Clear RacosCommon

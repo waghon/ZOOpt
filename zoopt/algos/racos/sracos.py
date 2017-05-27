@@ -72,7 +72,7 @@ class SRacos(RacosCommon):
             self._parameter.set_probability(self._parameter.get_min_probability())
             for x in self._positive_data:
                 self._objective.accurate_eval(x)
-                return 100
+            return 100*len(self._positive_data)
         return 0
 
     def replace(self, iset, x, iset_type, strategy='WR'):
